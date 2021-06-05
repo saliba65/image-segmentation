@@ -1,4 +1,3 @@
-
 from __future__ import division
 import numpy as np
 import cv2
@@ -10,7 +9,6 @@ from augmentingPath import augmentingPath
 from pushRelabel import pushRelabel
 from boykovKolmogorov import boykovKolmogorov
 
-# np.set_printoptions(threshold=np.inf)
 graphCutAlgo = {"ap": augmentingPath,
                 "pr": pushRelabel,
                 "bk": boykovKolmogorov}
@@ -25,7 +23,6 @@ CUTCOLOR = (0, 0, 255)
 SOURCE, SINK = -2, -1
 SF = 10
 LOADSEEDS = False
-# drawing = False
 
 
 def show_image(image):
@@ -75,7 +72,8 @@ def plantSeed(image):
     image = cv2.resize(image, (0, 0), fx=SF, fy=SF)
 
     radius = 10
-    thickness = -1  # fill the whole circle
+    thickness = -1
+    # Preencher todo o circulo
     global drawing
     drawing = False
 
@@ -84,7 +82,6 @@ def plantSeed(image):
     return seeds, image
 
 
-# Large when ip - iq < sigma, and small otherwise
 def boundaryPenalty(ip, iq):
     bp = 100 * exp(- pow(int(ip) - int(iq), 2) / (2 * pow(SIGMA, 2)))
     return bp
@@ -105,12 +102,12 @@ def makeNLinks(graph, image):
     for i in range(r):
         for j in range(c):
             x = i * c + j
-            if i + 1 < r:  # pixel below
+            if i + 1 < r:
                 y = (i + 1) * c + j
                 bp = boundaryPenalty(image[i][j], image[i + 1][j])
                 graph[x][y] = graph[y][x] = bp
                 K = max(K, bp)
-            if j + 1 < c:  # pixel to the right
+            if j + 1 < c:
                 y = i * c + j + 1
                 bp = boundaryPenalty(image[i][j], image[i][j + 1])
                 graph[x][y] = graph[y][x] = bp
@@ -125,14 +122,9 @@ def makeTLinks(graph, seeds, K):
         for j in range(c):
             x = i * c + j
             if seeds[i][j] == OBJCODE:
-                # graph[x][source] = K
                 graph[SOURCE][x] = K
             elif seeds[i][j] == BKGCODE:
                 graph[x][SINK] = K
-                # graph[sink][x] = K
-            # else:
-            #     graph[x][source] = LAMBDA * regionalPenalty(image[i][j], BKG)
-            #     graph[x][sink]   = LAMBDA * regionalPenalty(image[i][j], OBJ)
 
 
 def displayCut(image, cuts):
@@ -159,7 +151,7 @@ def imageSegmentation(imagefile, size=(30, 30), algo="ff"):
     SOURCE += len(graph)
     SINK += len(graph)
 
-    cuts = graphCutAlgo[algo](graph, SOURCE, SINK)
+    cuts = graphCutAlgo["ap"](graph, SOURCE, SINK)
     print("cuts:")
     print(cuts)
     image = displayCut(image, cuts)

@@ -1,12 +1,13 @@
-from Queue import Queue
+from multiprocessing import Queue
 import numpy as np
+
 
 def bfs(rGraph, V, s, t, parent):
     q = Queue()
     visited = np.zeros(V, dtype=bool)
     q.put(s)
     visited[s] = True
-    parent[s]  = -1
+    parent[s] = -1
 
     while not q.empty():
         u = q.get()
@@ -17,6 +18,7 @@ def bfs(rGraph, V, s, t, parent):
                 visited[v] = True
     return visited[v]
 
+
 def dfs(rGraph, V, s, visited):
     stack = [s]
     while stack:
@@ -26,9 +28,8 @@ def dfs(rGraph, V, s, visited):
             stack.extend([u for u in range(V) if rGraph[v][u]])
 
 
-
 def augmentingPath(graph, s, t):
-    print ("Running augmenting path algorithm")
+    print("Running augmenting path algorithm")
     rGraph = graph.copy()
     V = len(graph)
     parent = np.zeros(V, dtype='int32')
